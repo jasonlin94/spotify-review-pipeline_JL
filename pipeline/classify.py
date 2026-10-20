@@ -165,8 +165,9 @@ def classify(input_csv: str, run_dir: str, provider: str | None,
     calls_fp = (rd / "calls.jsonl").open("a", encoding="utf-8")
     done_fp = done_path.open("a", encoding="utf-8")
 
-    stats = {"completed": 0, "quarantined": 0, "dup_reused": 0, "calls": 0,
-             "in_tokens": 0, "out_tokens": 0, "retries": 0, "label_config": label_config}
+    stats = {"completed": 0, "quarantined": 0, "dup_reused": 0, "skipped": 0,
+             "calls": 0, "in_tokens": 0, "out_tokens": 0, "retries": 0,
+             "label_config": label_config}
     textsha_to_record: dict[str, dict] = {}
     t0 = time.time()
 
@@ -189,15 +190,18 @@ def classify(input_csv: str, run_dir: str, provider: str | None,
         }, ensure_ascii=False) + "\n")
         calls_fp.flush()
 
-    def run_batch(batch: list[tuple[str, str]]) -> dict[str, dict]:
+    def run_batch(batch: list[tuple[str, str]]) -> tuple[dict[str, dict], bool]:
+        """Return (parsed_by_review_id, call_ok). call_ok=False means the model
+        call itself failed (e.g. rate limit); such ids are left PENDING (not
+        quarantined) so a later resume retries them."""
         prompt = build_prompt(batch)
         ids = [rid for rid, _ in batch]
         try:
             res = client.generate(prompt)
         except ModelError as e:
             log_call(ids, None, "failed")
-            print(f"[warn] model error: {e}", file=sys.stderr)
-            return {}
+            print(f"[warn] model error (ids left pending): {e}", file=sys.stderr)
+            return {}, False
         stats["calls"] += 1
         stats["in_tokens"] += res.input_tokens
         stats["out_tokens"] += res.output_tokens
@@ -210,23 +214,30 @@ def classify(input_csv: str, run_dir: str, provider: str | None,
                 p = parse_line(line)
                 if p and p["id"] in idx_to_rid:
                     parsed[idx_to_rid[p["id"]]] = p
-        return parsed
+        return parsed, True
 
     # ---- distinct texts, in batches ----
     for i in range(0, len(distinct), batch_size):
         chunk = distinct[i:i + batch_size]
         batch = [(p["review_id"], rows[p["review_id"]]["review_text"]) for p in chunk
                  if p["review_id"] in rows]
-        parsed = run_batch(batch)
+        parsed, ok1 = run_batch(batch)
         missing = [b for b in batch if b[0] not in parsed]
+        ok2 = False
         if missing:
             stats["retries"] += 1
-            parsed.update(run_batch(missing))
+            retry_parsed, ok2 = run_batch(missing)
+            parsed.update(retry_parsed)
+        any_ok = ok1 or ok2
 
         for rid, text in batch:
             row = rows[rid]
             p = parsed.get(rid)
             if p is None:
+                if not any_ok:
+                    # model call failed (e.g. rate limit) -> leave PENDING for resume
+                    stats["skipped"] += 1
+                    continue
                 quar_fp.write(json.dumps({
                     "review_id": rid, "status": "quarantined",
                     "reason": "invalid_model_output", "attempts": 2,
