@@ -9,7 +9,9 @@ LABEL_CONFIG_VERSION is stamped onto every record so cache reuse is only valid
 under an unchanged config (model/effort/prompt/schema all tracked separately).
 """
 
-LABEL_CONFIG_VERSION = "labels-v1"
+# Schema/taxonomy version; part of the record `label_config` string
+# (full form: "<model>+<prompt_version>+<schema_version>").
+SCHEMA_VERSION = "schema-v1"
 
 # --- Eight exact primary topics (closed set) ---
 TOPICS = {

@@ -32,7 +32,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from .schema import source_sha256
+from .hashing import text_sha
+from .labels import SCHEMA_VERSION
 
 # Allow very large review_text fields.
 csv.field_size_limit(min(sys.maxsize, 2**31 - 1))
@@ -114,13 +115,13 @@ def prepare(input_path: str, run_id: str, out_root: str = "data/outputs",
                     }, ensure_ascii=False) + "\n")
                     continue
 
-                sha = source_sha256(text)
-                text_counts[sha] += 1
-                cache_source_id = text_to_first_id.setdefault(sha, rid)
+                th = text_sha(text)
+                text_counts[th] += 1
+                cache_source_id = text_to_first_id.setdefault(th, rid)
 
                 pending_fp.write(json.dumps({
                     "review_id": rid,
-                    "source_sha256": sha,
+                    "text_sha": th,
                     "text_len": len(text),
                     "is_dup": cache_source_id != rid,
                     "cache_source_id": cache_source_id,
@@ -169,7 +170,7 @@ def prepare(input_path: str, run_id: str, out_root: str = "data/outputs",
         "source_bytes": src.stat().st_size,
         "source_sha256": file_sha256(src),
         "rows_total": n_rows,
-        "label_config": __import__("pipeline.labels", fromlist=["LABEL_CONFIG_VERSION"]).LABEL_CONFIG_VERSION,
+        "schema_version": SCHEMA_VERSION,
     }
 
     (out_dir / "ingestion_report.json").write_text(

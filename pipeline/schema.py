@@ -1,33 +1,20 @@
 """Enriched-record schema + validation (code owns correctness, not the model).
 
-Every completed record carries:
-  review_id, source_sha256, status, topic, intent, sentiment (-1..1),
-  severity (int 1..5), entities, evidence_quote (exact source substring),
-  needs_review, label_config.
+Aligned with GRADING_CONTRACT.md / check_submission.py. A completed record:
+  review_id, source_sha256 (ROW hash of 6 fields), status, topic, intent,
+  sentiment (-1..1), severity (int 1..5), entities (list[str]), evidence_quote
+  (exact source substring), needs_review (bool), label_config (nonempty str).
 
-`validate_record` enforces required keys, types, allowed labels, numeric ranges,
-exact source ID, and quote membership. A record that fails is retried once by the
-orchestrator, then quarantined. NOTE: a *valid* record can still be *wrong* — a
-real quote may not support the chosen label; that is what the verifier + golden
-set catch, not this function.
-
-Exact field names / export order will be reconciled with GRADING_CONTRACT.md
-(records.jsonl) once the dataset ZIP is available.
+`validate_record` enforces exactly what the checker's `audit` requires so a valid
+record never trips invalid_schema / source_mismatch / unsupported_quote.
+A valid record can still be WRONG (quote may not support the label) -> verifier.
 """
 from __future__ import annotations
 
-import hashlib
 from typing import Any
 
-from .labels import (
-    ALLOWED_STATUSES,
-    INTENTS,
-    LABEL_CONFIG_VERSION,
-    SENTIMENT_MAX,
-    SENTIMENT_MIN,
-    SEVERITY,
-    TOPICS,
-)
+from .hashing import row_sha
+from .labels import INTENTS, SEVERITY, TOPICS
 
 REQUIRED_KEYS = [
     "review_id", "source_sha256", "status", "topic", "intent",
@@ -36,77 +23,78 @@ REQUIRED_KEYS = [
 ]
 
 
-def source_sha256(review_text: str) -> str:
-    """Hash of the ORIGINAL review text (UTF-8). The exact hashing rule is fixed
-    by GRADING_CONTRACT.md; we default to sha256 of the raw bytes and will
-    confirm (e.g. whether newlines are normalized) against the contract."""
-    return hashlib.sha256(review_text.encode("utf-8")).hexdigest()
+def make_label_config(model: str, prompt_version: str, schema_version: str) -> str:
+    return f"{model}+{prompt_version}+{schema_version}"
 
 
-class ValidationError(Exception):
-    pass
+def validate_completed(rec: dict[str, Any], row: dict[str, Any]) -> list[str]:
+    """Return problems for a COMPLETED record; empty list == valid.
 
-
-def validate_record(rec: dict[str, Any], review_text: str, review_id: str) -> list[str]:
-    """Return a list of problems; empty list == valid."""
+    `row` is the original CSV row (all 6 fields) so we can recompute the row hash
+    and confirm the quote is a substring of the exact source text.
+    """
     errs: list[str] = []
-
     for k in REQUIRED_KEYS:
         if k not in rec:
             errs.append(f"missing key: {k}")
     if errs:
-        return errs  # can't check further without keys
+        return errs
 
-    if str(rec["review_id"]) != str(review_id):
-        errs.append("review_id does not match source ID")
-
-    if rec["source_sha256"] != source_sha256(review_text):
-        errs.append("source_sha256 does not match original text")
-
-    if rec["status"] not in ALLOWED_STATUSES:
-        errs.append(f"bad status: {rec['status']!r}")
-
+    if str(rec["review_id"]) != str(row["review_id"]):
+        errs.append("review_id mismatch")
+    if rec["source_sha256"] != row_sha(row):
+        errs.append("source_sha256 != row_sha")
     if rec["topic"] not in TOPICS:
         errs.append(f"bad topic: {rec['topic']!r}")
-
     if rec["intent"] not in INTENTS:
         errs.append(f"bad intent: {rec['intent']!r}")
 
     s = rec["sentiment"]
-    if not isinstance(s, (int, float)) or not (SENTIMENT_MIN <= s <= SENTIMENT_MAX):
+    if type(s) not in (int, float) or not (-1 <= s <= 1):
         errs.append(f"sentiment out of range: {s!r}")
+    if type(rec["severity"]) is not int or rec["severity"] not in SEVERITY:
+        errs.append(f"severity must be int 1..5: {rec['severity']!r}")
 
-    sev = rec["severity"]
-    if not isinstance(sev, int) or sev not in SEVERITY:
-        errs.append(f"severity must be int 1..5: {sev!r}")
+    ents = rec["entities"]
+    if not isinstance(ents, list) or not all(isinstance(x, str) and x.strip() for x in ents):
+        errs.append("entities must be a list of nonempty strings")
 
-    if not isinstance(rec["entities"], list):
-        errs.append("entities must be a list")
-
-    # evidence_quote must be an exact substring of the original text.
     q = rec["evidence_quote"]
-    if not isinstance(q, str):
-        errs.append("evidence_quote must be a string")
-    elif q and q not in review_text:
+    if not isinstance(q, str) or not q.strip():
+        errs.append("evidence_quote must be a nonempty string")
+    elif q not in row["review_text"]:
         errs.append("evidence_quote is not an exact substring of source text")
 
-    if not isinstance(rec["needs_review"], bool):
+    if type(rec["needs_review"]) is not bool:
         errs.append("needs_review must be a bool")
-
-    if rec["label_config"] != LABEL_CONFIG_VERSION:
-        errs.append(
-            f"label_config mismatch: {rec['label_config']!r} != {LABEL_CONFIG_VERSION!r}"
-        )
-
+    if not isinstance(rec["label_config"], str) or not rec["label_config"].strip():
+        errs.append("label_config must be a nonempty string")
     return errs
 
 
-def new_record(review_id: str, review_text: str, **fields: Any) -> dict[str, Any]:
-    """Assemble a record with provenance fields filled in by code."""
-    rec = {
-        "review_id": str(review_id),
-        "source_sha256": source_sha256(review_text),
-        "label_config": LABEL_CONFIG_VERSION,
+def completed_record(row: dict[str, Any], *, topic: str, intent: str,
+                     sentiment: float, severity: int, entities: list[str],
+                     evidence_quote: str, needs_review: bool,
+                     label_config: str) -> dict[str, Any]:
+    return {
+        "review_id": str(row["review_id"]),
+        "source_sha256": row_sha(row),
+        "status": "completed",
+        "topic": topic,
+        "intent": intent,
+        "sentiment": sentiment,
+        "severity": severity,
+        "entities": entities,
+        "evidence_quote": evidence_quote,
+        "needs_review": needs_review,
+        "label_config": label_config,
     }
-    rec.update(fields)
-    return rec
+
+
+def quarantined_record(row: dict[str, Any], reason: str) -> dict[str, Any]:
+    return {
+        "review_id": str(row["review_id"]),
+        "source_sha256": row_sha(row),
+        "status": "quarantined",
+        "reason": reason,
+    }
