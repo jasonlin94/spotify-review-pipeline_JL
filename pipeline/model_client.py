@@ -49,7 +49,7 @@ class GeminiClient:
             raise ModelError("GEMINI_API_KEY not set in environment (.env)")
         return k
 
-    def generate(self, prompt: str, max_retries: int = 2) -> GenResult:
+    def generate(self, prompt: str, max_retries: int = 5) -> GenResult:
         url = f"{self.BASE}/{self.model}:generateContent"
         body = json.dumps({
             "contents": [{"parts": [{"text": prompt}]}],
@@ -80,14 +80,17 @@ class GeminiClient:
                 )
             except urllib.error.HTTPError as e:
                 last_err = f"HTTP {e.code}: {e.read().decode('utf-8', 'ignore')[:300]}"
-                if e.code in (429, 500, 503) and attempt < max_retries:
-                    time.sleep(min(2 ** attempt + 0.5, 10))  # bounded backoff
+                if e.code in (429, 500, 502, 503, 504) and attempt < max_retries:
+                    time.sleep(min(2 ** attempt + 0.5, 30))  # bounded backoff
                     continue
                 raise ModelError(last_err)
-            except (urllib.error.URLError, TimeoutError) as e:
-                last_err = str(e)
+            # OSError covers ConnectionResetError / ConnectionError / socket errors
+            # that can occur mid-read on a long run; URLError wraps most of these
+            # but a raw ConnectionResetError can escape, so catch OSError too.
+            except (urllib.error.URLError, TimeoutError, OSError) as e:
+                last_err = f"{type(e).__name__}: {e}"
                 if attempt < max_retries:
-                    time.sleep(min(2 ** attempt + 0.5, 10))
+                    time.sleep(min(2 ** attempt + 0.5, 30))
                     continue
                 raise ModelError(last_err)
         raise ModelError(last_err or "unknown error")
@@ -126,8 +129,8 @@ class OllamaClient:
                     output_tokens=out.get("eval_count", 0),
                     latency_s=dt, model=self.model, raw_usage=out,
                 )
-            except (urllib.error.URLError, TimeoutError) as e:
-                last_err = str(e)
+            except (urllib.error.URLError, TimeoutError, OSError) as e:
+                last_err = f"{type(e).__name__}: {e}"
                 if attempt < max_retries:
                     time.sleep(1.0)
                     continue

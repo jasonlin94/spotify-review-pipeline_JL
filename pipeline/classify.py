@@ -198,9 +198,10 @@ def classify(input_csv: str, run_dir: str, provider: str | None,
         ids = [rid for rid, _ in batch]
         try:
             res = client.generate(prompt)
-        except ModelError as e:
+        except Exception as e:  # noqa: BLE001 - never let one batch kill a long run
             log_call(ids, None, "failed")
-            print(f"[warn] model error (ids left pending): {e}", file=sys.stderr)
+            print(f"[warn] batch error (ids left pending): {type(e).__name__}: {e}",
+                  file=sys.stderr)
             return {}, False
         stats["calls"] += 1
         stats["in_tokens"] += res.input_tokens
