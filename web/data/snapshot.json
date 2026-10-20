@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-10-20T18:09:27.826887+00:00",
+  "generated_at": "2026-10-20T18:28:50.843283+00:00",
   "overview": {
     "rows_total": 660622,
     "rows_nonempty": 660609,
     "rows_empty": 13,
     "distinct_nonempty_texts": 484189,
     "exact_text_reuse_savings": 176420,
-    "completed": 107950,
+    "completed": 107991,
     "dup_reused": 295,
     "quarantined": 113,
     "model": "gemini-3.5-flash-lite+classify-v1+schema-v1",
@@ -18,38 +18,38 @@
     {
       "rank": 1,
       "issue_id": "playback",
-      "title": "Crashing and shuffle issues",
-      "complaint_count": 12902,
-      "severity_sum": 43467,
-      "mean_severity": "3.369013",
-      "priority_score": 43467
+      "title": "App crashing and shuffle issues",
+      "complaint_count": 12903,
+      "severity_sum": 43471,
+      "mean_severity": "3.369061",
+      "priority_score": 43471
     },
     {
       "rank": 2,
       "issue_id": "usability",
       "title": "Excessive ads and forced shuffle",
-      "complaint_count": 13497,
-      "severity_sum": 33931,
-      "mean_severity": "2.513966",
-      "priority_score": 33931
+      "complaint_count": 13507,
+      "severity_sum": 33962,
+      "mean_severity": "2.514400",
+      "priority_score": 33962
     },
     {
       "rank": 3,
       "issue_id": "catalog",
       "title": "Missing songs and duplicate tracks",
-      "complaint_count": 4469,
-      "severity_sum": 11794,
-      "mean_severity": "2.639069",
-      "priority_score": 11794
+      "complaint_count": 4471,
+      "severity_sum": 11799,
+      "mean_severity": "2.639007",
+      "priority_score": 11799
     },
     {
       "rank": 4,
       "issue_id": "access",
       "title": "App freezing and login errors",
-      "complaint_count": 2885,
-      "severity_sum": 10878,
-      "mean_severity": "3.770537",
-      "priority_score": 10878
+      "complaint_count": 2886,
+      "severity_sum": 10882,
+      "mean_severity": "3.770617",
+      "priority_score": 10882
     },
     {
       "rank": 5,
@@ -63,7 +63,7 @@
     {
       "rank": 6,
       "issue_id": "downloads",
-      "title": "Lost or unplayable offline downloads",
+      "title": "Lost downloads and offline playback issues",
       "complaint_count": 1748,
       "severity_sum": 5575,
       "mean_severity": "3.189359",
@@ -73,15 +73,15 @@
       "rank": 7,
       "issue_id": "other",
       "title": "General dissatisfaction and complaints",
-      "complaint_count": 1710,
-      "severity_sum": 3272,
-      "mean_severity": "1.913450",
-      "priority_score": 3272
+      "complaint_count": 1716,
+      "severity_sum": 3278,
+      "mean_severity": "1.910256",
+      "priority_score": 3278
     },
     {
       "rank": 8,
       "issue_id": "support",
-      "title": "Poor customer service and abuse",
+      "title": "Poor customer service experience",
       "complaint_count": 159,
       "severity_sum": 500,
       "mean_severity": "3.144654",
@@ -90,8 +90,8 @@
   ],
   "recommendation": {
     "recommendation_issue_id": "playback",
-    "headline": "Spotify should focus its next quarter of product effort on playback issues, specifically addressing crashing and shuffle bugs.",
-    "rationale": "Playback ranks as the highest priority issue with a priority score of 43467 (C4), driven by 12902 complaints (C1) and a severe severity sum of 43467 (C2). Users frequently report critical failures such as the app force-closing or crashing completely (e.g., review `1730c0f6-e36b-4e2b-b1a2-547922f89673`) and hardware-level playback disruptions following updates (e.g., review `07f59bbd-a997-47f6-b91e-4a9a5c645c32`). With a high mean severity of 3.369 (C3), resolving these stability flaws is vital to preventing immediate user churn.",
+    "headline": "Spotify should focus its next quarter of product effort on playback issues to address app crashes and shuffle problems.",
+    "rationale": "Playback ranks as the highest priority issue with a priority score of 43471 (C4), driven by 12903 complaints (C1) and the highest severity sum of 43471 (C2). Users report severe disruptions such as app force closes, freezing, and hardware interference, as highlighted by reviews like review_id=1730c0f6-e36b-4e2b-b1a2-547922f89673 and review_id=07f59bbd-a997-47f6-b91e-4a9a5c645c32. Addressing core playback stability will directly mitigate the most damaging complaints affecting user experience.",
     "supporting_claim_ids": [
       "C1",
       "C2",
@@ -106,22 +106,18 @@
     "alternatives": [
       {
         "issue_id": "usability",
-        "why_not": "While usability has a high complaint count, its priority score of 33931 (C8) and lower mean severity of 2.514 (C7) rank it behind playback stability."
-      },
-      {
-        "issue_id": "catalog",
-        "why_not": "Catalog issues carry a lower priority score of 11794 (C12) compared to the severe stability disruptions affecting playback."
+        "why_not": "Although usability has a high complaint count of 13507 (C5), its priority score of 33962 (C8) ranks behind playback."
       },
       {
         "issue_id": "access",
-        "why_not": "Access issues account for only 2885 complaints (C13) and a priority score of 10878 (C16), making playback a more widespread concern."
+        "why_not": "Access has a lower priority score of 10882 (C16) compared to playback."
       },
       {
         "issue_id": "billing",
-        "why_not": "Billing generates fewer total complaints (2647) and a lower priority score of 8458 (C20) than playback."
+        "why_not": "Billing has a lower priority score of 8458 (C20) compared to playback."
       }
     ],
-    "limitations": "The findings are derived from self-selected historical reviews representing a subset of user feedback. Expressed intent in reviews may not always translate directly to actual long-term churn. Additionally, the data covers only partial review windows and specific timeframes."
+    "limitations": "Self-selected historical reviews may skew the feedback toward extreme negative experiences rather than normal usage. Expressed intent in reviews does not always translate into actual user churn. The review window is based on partial months, limiting temporal consistency."
   },
   "issues": {
     "access": {
@@ -1538,7 +1534,7 @@
     },
     "playback": {
       "issue_id": "playback",
-      "title": "Crashing and shuffle issues",
+      "title": "App crashing and shuffle issues",
       "members": [
         {
           "review_id": "00d770d6-fdc3-4521-8cce-1a9613b9cadd",
@@ -2950,7 +2946,7 @@
     },
     "downloads": {
       "issue_id": "downloads",
-      "title": "Lost or unplayable offline downloads",
+      "title": "Lost downloads and offline playback issues",
       "members": [
         {
           "review_id": "21c77190-8c48-4df6-ad63-e55334fd328d",
@@ -5068,7 +5064,7 @@
     },
     "support": {
       "issue_id": "support",
-      "title": "Poor customer service and abuse",
+      "title": "Poor customer service experience",
       "members": [
         {
           "review_id": "1599d66d-3533-40f3-b90b-773fd318d3f7",
