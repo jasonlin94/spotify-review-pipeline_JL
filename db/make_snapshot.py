@@ -48,8 +48,9 @@ def main() -> None:
     membership = read_csv(g / "membership.csv")
 
     # Index completed records for drill-down (severity + quote per review).
+    # Read run-dir enriched.jsonl (always plain) since grading/records.jsonl may be gzipped.
     rec_by_id: dict[str, dict] = {}
-    for line in (g / "records.jsonl").read_text(encoding="utf-8").splitlines():
+    for line in (Path(args.run_dir) / "enriched.jsonl").read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         r = json.loads(line)
@@ -82,15 +83,22 @@ def main() -> None:
             "priority_score": int(r["priority_score"]),
         })
 
+    # Count completed/quarantined from the AUTHORITATIVE files, not the (possibly
+    # stale) classify_stats.json left by an earlier/interrupted phase.
+    enr = Path(args.run_dir) / "enriched.jsonl"
+    completed_n = sum(1 for _ in enr.open(encoding="utf-8")) if enr.exists() else stats.get("completed")
+    quar = Path(args.run_dir) / "quarantine.jsonl"
+    quar_n = sum(1 for l in quar.open(encoding="utf-8") if l.strip()) if quar.exists() else stats.get("quarantined")
+
     overview = {
         "rows_total": ingest.get("rows_total"),
         "rows_nonempty": ingest.get("rows_nonempty"),
         "rows_empty": ingest.get("rows_empty"),
         "distinct_nonempty_texts": ingest.get("distinct_nonempty_texts"),
         "exact_text_reuse_savings": ingest.get("exact_text_reuse_savings"),
-        "completed": stats.get("completed"),
+        "completed": completed_n,
         "dup_reused": stats.get("dup_reused"),
-        "quarantined": stats.get("quarantined"),
+        "quarantined": quar_n,
         "model": stats.get("label_config"),
         "pilot_cost_usd_per_100": None,
         "cold_wall_s_100": cost_meta.get("cold_wall_s"),
