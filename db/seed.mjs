@@ -11,9 +11,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 
 async function main() {
-  const url = process.env.DATABASE_URL;
+  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL_NON_POOLING;
   if (!url) {
-    console.error("DATABASE_URL not set. Example:\n  DATABASE_URL=postgres://user:pass@host/db node db/seed.mjs");
+    console.error("No DB URL. Set DATABASE_URL (or POSTGRES_URL). Example:\n" +
+      "  DATABASE_URL=postgres://user:pass@host/db node db/seed.mjs");
     process.exit(1);
   }
   const snapshot = JSON.parse(

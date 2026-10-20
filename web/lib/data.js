@@ -12,9 +12,20 @@ function readSnapshotFile() {
   return JSON.parse(fs.readFileSync(p, "utf-8"));
 }
 
+function dbUrl() {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL_NON_POOLING || "";
+}
+
 async function readFromPostgres() {
   const { Pool } = await import("pg");
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 2 });
+  const url = dbUrl();
+  const pool = new Pool({
+    connectionString: url,
+    max: 2,
+    ssl: /neon\.tech|vercel|supabase|render\.com|sslmode=require/.test(url)
+      ? { rejectUnauthorized: false } : undefined,
+  });
   try {
     const overview = (await pool.query("select data from overview where id=1")).rows[0]?.data ?? {};
     const ranking = (await pool.query(
@@ -41,10 +52,19 @@ async function readFromPostgres() {
 
 export async function getData() {
   if (cache) return cache;
-  cache = process.env.DATABASE_URL ? await readFromPostgres() : readSnapshotFile();
+  if (dbUrl()) {
+    try {
+      cache = await readFromPostgres();
+      return cache;
+    } catch (e) {
+      // Fall back to the committed snapshot if the DB is unreachable/empty.
+      console.error("Postgres read failed, using snapshot:", e.message);
+    }
+  }
+  cache = readSnapshotFile();
   return cache;
 }
 
 export function dataSource() {
-  return process.env.DATABASE_URL ? "postgres" : "snapshot";
+  return dbUrl() ? "postgres" : "snapshot";
 }
