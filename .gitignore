@@ -39,3 +39,7 @@ build/
 .DS_Store
 Thumbs.db
 data/dataset/
+
+# evals golden set (blank template committed; fill it and it stays tracked)
+!evals/golden_50_labeled.csv
+!evals/*.json

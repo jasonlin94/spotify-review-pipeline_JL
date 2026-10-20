@@ -1,0 +1,69 @@
+{
+  "test": "planted_error",
+  "model": "gemini-3.5-flash-lite",
+  "cases": 3,
+  "planted_errors_detected": 3,
+  "note": "PASS = verifier disagrees with the planted wrong label (catches it). Synthetic PE- ids are excluded from business aggregates.",
+  "results": [
+    {
+      "id": "PE-001",
+      "planted_wrong": {
+        "topic": "playback",
+        "intent": "praise",
+        "severity": 1
+      },
+      "true_label": {
+        "topic": "access",
+        "intent": "complaint",
+        "severity": 4
+      },
+      "verifier_independent": {
+        "topic": "access",
+        "intent": "complaint",
+        "severity": 4
+      },
+      "planted_error_detected": true,
+      "verifier_matches_truth": true
+    },
+    {
+      "id": "PE-002",
+      "planted_wrong": {
+        "topic": "downloads",
+        "intent": "praise",
+        "severity": 1
+      },
+      "true_label": {
+        "topic": "billing",
+        "intent": "complaint",
+        "severity": 4
+      },
+      "verifier_independent": {
+        "topic": "billing",
+        "intent": "request",
+        "severity": 5
+      },
+      "planted_error_detected": true,
+      "verifier_matches_truth": false
+    },
+    {
+      "id": "PE-003",
+      "planted_wrong": {
+        "topic": "support",
+        "intent": "cancellation",
+        "severity": 5
+      },
+      "true_label": {
+        "topic": "downloads",
+        "intent": "complaint",
+        "severity": 3
+      },
+      "verifier_independent": {
+        "topic": "playback",
+        "intent": "complaint",
+        "severity": 3
+      },
+      "planted_error_detected": true,
+      "verifier_matches_truth": false
+    }
+  ]
+}
