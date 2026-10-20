@@ -125,15 +125,24 @@ _Ingestion (verified, exact match to `manifest.json`):_
 | distinct nonempty texts | 484,189 (exact-text reuse saves 176,420 first-pass calls) |
 | missing app_version | 159,701 · duplicate review_ids 0 |
 
-_Classification (full run in progress; final counts filled on completion):_
-measured throughput ≈ 24 reviews/s; ~7% of deep-corpus reviews are garbage /
-emoji-only strings that fail structured formatting and are quarantined
-`invalid_model_output` (recoverable with `pipeline.recover`).
+_Classification (final, 100k-path within the $5 budget):_ **107,950** reviews
+classified (completed), **63** quarantined (13 empty-text + 50 garbage/emoji
+strings that fail structured formatting). Official-checker **coverage point
+candidate 0.3307** (= 0.2 full-file profile match + 0.2×accounted/660,622 +
+0.6×valid/660,609); all records / membership / ranking / claims pass with no
+schema, source-hash, quote, or ranking mismatches. The run was credit-capped at
+$5 (prepaid); the pipeline is resumable toward full coverage.
 
-_Independent verification (200-review declared sample of the 10k checkpoint):_
-topic agreement **0.675**, intent **0.905**, severity exact **0.775**, severity
-MAE **0.265** — honest second-opinion spread for a small flash-lite model; see
-`verify_report.json` and its concrete disagreements.
+_Baseline ranking (deterministic):_ **#1 playback** (12,902 complaints, mean
+severity 3.369, priority 43,467), #2 usability (13,497 complaints, mean 2.514,
+priority 33,931), then catalog, access, billing, downloads, other, support.
+
+_Independent verification (400-review declared sample, Gemini):_
+topic agreement **0.603**, intent **0.950**, severity exact **0.850**, severity
+MAE **0.156**; see `verify_report.json` and its concrete disagreements.
+
+_Decision memo:_ recommends **Playback** (crashing/shuffle stability), citing
+claim IDs C1–C3 and representative review IDs — every citation code-validated.
 
 _System tests:_ prompt-injection **4/4 ignored**; planted-error **3/3 caught**.
 
@@ -153,9 +162,10 @@ membership / ranking / claims on the 100- and 500-review checkpoints
 `review_id 45c561b9-cc47-4d80-95d3-f0d20bc84af3` →
 Stage 2 enrich → `topic=usability, intent=cancellation, severity=3,
 evidence_quote="The update made the app useless …. Uninstall …"` →
-Stage 4 group → issue `usability` → Stage 5 rank → contributes to
-`priority_score` → Stage 6 memo cites it as a representative review for the
-`usability` recommendation. An ambiguous/handled case: garbage text like
+Stage 4 group → issue `usability` → Stage 5 rank → contributes to the
+`usability` issue's `priority_score` (ranked #2). The memo's top recommendation
+is `playback` (#1), citing its own representative reviews. An ambiguous/handled
+case: garbage text like
 `"22i2I 122"` fails structured formatting → quarantined `invalid_model_output`
 (reason + attempt count preserved) rather than guessed.
 
