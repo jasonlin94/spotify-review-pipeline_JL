@@ -37,7 +37,7 @@ class GeminiClient:
 
     BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
-    def __init__(self, model: str = "gemini-2.0-flash-lite",
+    def __init__(self, model: str = "gemini-3.5-flash-lite",
                  output_token_cap: int = 1024, temperature: float = 0.0):
         self.model = model
         self.output_token_cap = output_token_cap
