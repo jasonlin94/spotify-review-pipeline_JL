@@ -1,0 +1,40 @@
+# --- Secrets: never commit real keys ---
+.env
+.env.*
+!.env.example
+
+# --- Raw dataset (97.4 MB CSV is linked, not committed) ---
+data/raw/
+*.csv
+!cost/cost_100.csv
+!evals/golden_50_to_label.csv
+!**/rates.csv
+!**/usage.csv
+!**/*example*.csv
+
+# --- Large pipeline outputs (link as release assets instead) ---
+data/outputs/
+*.jsonl
+!evals/**/*.jsonl
+!cost/pilot_*.jsonl
+*.jsonl.gz
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Node / Next.js (web/) ---
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+*.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db

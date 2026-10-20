@@ -1,0 +1,10 @@
+# Pin exact versions; the README cites these for reproducibility.
+anthropic==0.40.0
+python-dotenv==1.0.1
+pydantic==2.9.2
+tqdm==4.66.5
+# Pipeline uses only the stdlib csv/sqlite3/hashlib/json elsewhere.
+# Dashboard backend (optional local run; prod is Next.js API routes on Vercel):
+fastapi==0.115.2
+uvicorn==0.32.0
+psycopg[binary]==3.2.3
