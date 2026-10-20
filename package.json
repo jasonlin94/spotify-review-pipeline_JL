@@ -1,0 +1,27 @@
+{
+  "name": "spotify-pipeline",
+  "version": "1.0.0",
+  "description": "A multi-agent, code-coordinated pipeline that turns **97.4 MB of real Spotify reviews** (660,622 rows) into an **auditable** product-priority recommendation. Every material number traces to a saved deterministic calculation and to source reviews, and a reviewer can inspect all conclusions **without rerunning any paid model call**.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonlin94/spotify-review-pipeline_JL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jasonlin94/spotify-review-pipeline_JL/issues"
+  },
+  "homepage": "https://github.com/jasonlin94/spotify-review-pipeline_JL#readme",
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}
