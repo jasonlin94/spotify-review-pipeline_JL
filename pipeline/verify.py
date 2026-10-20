@@ -65,24 +65,29 @@ def sample_ids(records: list[dict], n: int, seed: str) -> list[str]:
     return [r["review_id"] for r in scored[:n]]
 
 
+def _first_in(text: str, options) -> str | None:
+    """Earliest-appearing allowed token in the (possibly verbose) field text."""
+    low = text.lower()
+    found = [(low.find(o), o) for o in options if o in low]
+    return min(found)[1] if found else None
+
+
 def parse_line(line: str):
+    import re
     parts = [p.strip() for p in line.split("|")]
-    if len(parts) != 4:
+    if len(parts) < 4:
         return None
-    idx, topic, intent, sev = parts
-    if topic not in TOPICS or intent not in INTENTS:
+    idx = re.sub(r"\D", "", parts[0]) or parts[0]
+    topic = _first_in(parts[1], TOPICS)
+    intent = _first_in(parts[2], INTENTS)
+    m = re.search(r"[1-5]", parts[3])
+    if not (topic and intent and m):
         return None
-    try:
-        s = int(sev)
-    except ValueError:
-        return None
-    if s not in SEVERITY:
-        return None
-    return {"idx": idx, "topic": topic, "intent": intent, "severity": s}
+    return {"idx": idx, "topic": topic, "intent": intent, "severity": int(m.group())}
 
 
 def verify(run_dir: str, input_csv: str, sample: int, seed: str,
-           provider: str | None = None, batch_size: int = 50) -> dict:
+           provider: str | None = None, batch_size: int = 20) -> dict:
     load_env()
     rd = Path(run_dir)
     recs = [json.loads(l) for l in (rd / "enriched.jsonl").read_text(
@@ -92,7 +97,7 @@ def verify(run_dir: str, input_csv: str, sample: int, seed: str,
 
     ids = sample_ids(completed, min(sample, len(completed)), seed)
     texts = load_texts(Path(input_csv), set(ids))  # ORIGINAL text, independent of enricher
-    client = make_client(provider)
+    client = make_client(provider, output_token_cap=1536)
     model_id = getattr(client, "model", "unknown")
     label_config = f"{model_id}+{VERIFY_PROMPT_VERSION}+schema-v1"
 

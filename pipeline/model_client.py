@@ -154,5 +154,6 @@ def make_client(provider: str | None = None, **kw):
     if provider == "gemini":
         return GeminiClient(**kw)
     if provider == "ollama":
+        kw.setdefault("model", os.environ.get("OLLAMA_MODEL", "gemma4:e2b"))
         return OllamaClient(**kw)
     raise ModelError(f"unknown provider: {provider}")
