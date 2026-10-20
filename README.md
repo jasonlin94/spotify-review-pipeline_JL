@@ -108,11 +108,16 @@ python data/dataset/check_submission.py check     --reference local-reference.js
 
 ## Live dashboard
 
-**URL:** _to be added after deploy_ · deployment steps in [`web/DEPLOY.md`](web/DEPLOY.md).
-The backend (`/api/*`) reads processed data from **Postgres** and serves overall
-metrics, the issue ranking, and the AI-generated recommendation with supporting
-numbers and click-through issue → source-review evidence. No paid calls needed to
-inspect.
+**URL: https://spotify-review-pipeline-jl.vercel.app/** (public, no login) ·
+deployment steps in [`web/DEPLOY.md`](web/DEPLOY.md).
+
+Deployed on Vercel. The backend (`/api/*`) reads the processed data from a
+**Neon Postgres** database (seeded via `db/seed.mjs` from `db/make_snapshot.py`
+output) and serves overall metrics, the issue ranking, and the AI-generated
+recommendation with supporting numbers and click-through issue → source-review
+evidence. The header badge shows `source: postgres` when served from the
+database (it falls back to the committed JSON snapshot if the DB is
+unreachable). No paid model calls are needed to inspect anything.
 
 ## Results summary
 
