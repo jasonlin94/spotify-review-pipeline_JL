@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T16:52:20.501548+00:00",
+  "generated_at": "2026-10-20T17:35:12.345826+00:00",
   "overview": {
     "rows_total": 660622,
     "rows_nonempty": 660609,
@@ -18,7 +18,7 @@
     {
       "rank": 1,
       "issue_id": "playback",
-      "title": "playback",
+      "title": "Crashing and shuffle issues",
       "complaint_count": 12902,
       "severity_sum": 43467,
       "mean_severity": "3.369013",
@@ -27,7 +27,7 @@
     {
       "rank": 2,
       "issue_id": "usability",
-      "title": "usability",
+      "title": "Excessive ads and forced shuffle",
       "complaint_count": 13497,
       "severity_sum": 33931,
       "mean_severity": "2.513966",
@@ -36,7 +36,7 @@
     {
       "rank": 3,
       "issue_id": "catalog",
-      "title": "catalog",
+      "title": "Missing songs and duplicate tracks",
       "complaint_count": 4469,
       "severity_sum": 11794,
       "mean_severity": "2.639069",
@@ -45,7 +45,7 @@
     {
       "rank": 4,
       "issue_id": "access",
-      "title": "access",
+      "title": "App freezing and login errors",
       "complaint_count": 2885,
       "severity_sum": 10878,
       "mean_severity": "3.770537",
@@ -54,7 +54,7 @@
     {
       "rank": 5,
       "issue_id": "billing",
-      "title": "billing",
+      "title": "Payment and subscription issues",
       "complaint_count": 2647,
       "severity_sum": 8458,
       "mean_severity": "3.195315",
@@ -63,7 +63,7 @@
     {
       "rank": 6,
       "issue_id": "downloads",
-      "title": "downloads",
+      "title": "Lost or unplayable offline downloads",
       "complaint_count": 1748,
       "severity_sum": 5575,
       "mean_severity": "3.189359",
@@ -72,7 +72,7 @@
     {
       "rank": 7,
       "issue_id": "other",
-      "title": "other",
+      "title": "General dissatisfaction and complaints",
       "complaint_count": 1710,
       "severity_sum": 3272,
       "mean_severity": "1.913450",
@@ -81,18 +81,52 @@
     {
       "rank": 8,
       "issue_id": "support",
-      "title": "support",
+      "title": "Poor customer service and abuse",
       "complaint_count": 159,
       "severity_sum": 500,
       "mean_severity": "3.144654",
       "priority_score": 500
     }
   ],
-  "recommendation": null,
+  "recommendation": {
+    "recommendation_issue_id": "playback",
+    "headline": "Spotify should focus its next quarter of product effort on playback issues, specifically addressing crashing and shuffle bugs.",
+    "rationale": "Playback ranks as the highest priority issue with a priority score of 43467 (C4), driven by 12902 complaints (C1) and a severe severity sum of 43467 (C2). Users frequently report critical failures such as the app force-closing or crashing completely (e.g., review `1730c0f6-e36b-4e2b-b1a2-547922f89673`) and hardware-level playback disruptions following updates (e.g., review `07f59bbd-a997-47f6-b91e-4a9a5c645c32`). With a high mean severity of 3.369 (C3), resolving these stability flaws is vital to preventing immediate user churn.",
+    "supporting_claim_ids": [
+      "C1",
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "representative_review_ids": [
+      "00d770d6-fdc3-4521-8cce-1a9613b9cadd",
+      "07f59bbd-a997-47f6-b91e-4a9a5c645c32",
+      "1730c0f6-e36b-4e2b-b1a2-547922f89673"
+    ],
+    "alternatives": [
+      {
+        "issue_id": "usability",
+        "why_not": "While usability has a high complaint count, its priority score of 33931 (C8) and lower mean severity of 2.514 (C7) rank it behind playback stability."
+      },
+      {
+        "issue_id": "catalog",
+        "why_not": "Catalog issues carry a lower priority score of 11794 (C12) compared to the severe stability disruptions affecting playback."
+      },
+      {
+        "issue_id": "access",
+        "why_not": "Access issues account for only 2885 complaints (C13) and a priority score of 10878 (C16), making playback a more widespread concern."
+      },
+      {
+        "issue_id": "billing",
+        "why_not": "Billing generates fewer total complaints (2647) and a lower priority score of 8458 (C20) than playback."
+      }
+    ],
+    "limitations": "The findings are derived from self-selected historical reviews representing a subset of user feedback. Expressed intent in reviews may not always translate directly to actual long-term churn. Additionally, the data covers only partial review windows and specific timeframes."
+  },
   "issues": {
     "access": {
       "issue_id": "access",
-      "title": "access",
+      "title": "App freezing and login errors",
       "members": [
         {
           "review_id": "021425c4-59d4-4b65-8ea0-31c75dd5675a",
@@ -20293,7 +20327,7 @@
     },
     "billing": {
       "issue_id": "billing",
-      "title": "billing",
+      "title": "Payment and subscription issues",
       "members": [
         {
           "review_id": "00eaee0f-d8a3-43f8-b5f8-a5bf7bd2c7bd",
@@ -38828,7 +38862,7 @@
     },
     "playback": {
       "issue_id": "playback",
-      "title": "playback",
+      "title": "Crashing and shuffle issues",
       "members": [
         {
           "review_id": "00d770d6-fdc3-4521-8cce-1a9613b9cadd",
@@ -129148,7 +129182,7 @@
     },
     "other": {
       "issue_id": "other",
-      "title": "other",
+      "title": "General dissatisfaction and complaints",
       "members": [
         {
           "review_id": "08f88c90-d6a8-459c-bf27-4c4f81426f11",
@@ -141124,7 +141158,7 @@
     },
     "downloads": {
       "issue_id": "downloads",
-      "title": "downloads",
+      "title": "Lost or unplayable offline downloads",
       "members": [
         {
           "review_id": "21c77190-8c48-4df6-ad63-e55334fd328d",
@@ -153366,7 +153400,7 @@
     },
     "usability": {
       "issue_id": "usability",
-      "title": "usability",
+      "title": "Excessive ads and forced shuffle",
       "members": [
         {
           "review_id": "b4bccf6e-bd4a-4080-81f1-823e50852f0b",
@@ -247851,7 +247885,7 @@
     },
     "catalog": {
       "issue_id": "catalog",
-      "title": "catalog",
+      "title": "Missing songs and duplicate tracks",
       "members": [
         {
           "review_id": "16d12b2e-56b3-4d57-a382-73166d15a96c",
@@ -279140,7 +279174,7 @@
     },
     "support": {
       "issue_id": "support",
-      "title": "support",
+      "title": "Poor customer service and abuse",
       "members": [
         {
           "review_id": "1599d66d-3533-40f3-b90b-773fd318d3f7",
