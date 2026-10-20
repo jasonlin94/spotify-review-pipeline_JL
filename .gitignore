@@ -49,3 +49,8 @@ data/dataset/
 !grading/*.csv
 !grading/*.json
 !grading/*.jsonl.gz
+
+# local checker artifacts (grader builds their own)
+local-reference.json
+self-check.json
+*-reference.json
