@@ -1,3 +1,3 @@
 model,unit,input_per_1m,cached_input_per_1m,output_per_1m,currency,tier,source_url,checked_date,note
-gemini-3.5-flash-lite,token,0.10,0.025,0.40,USD,paid,https://ai.google.dev/gemini-api/docs/pricing,2026-10-19,EDITABLE assumption for flash-lite paid tier; recheck current price before relying on it
-gemini-3.5-flash-lite,token,0.0,0.0,0.0,USD,free,https://ai.google.dev/gemini-api/docs/rate-limits,2026-10-19,Free tier actually used during the pilot; zero API charge but rate/day limited
+gemini-3.5-flash-lite,token,0.49,0.12,1.96,USD,paid,https://ai.google.dev/gemini-api/docs/pricing,2026-10-19,CALIBRATED to observed Google billing 2026-10-19: ~US$3.44 (NTD 110) for 2.613M input + 1.100M output tokens; split assumes output approx 4x input. Recheck official published price.
+gemini-3.5-flash-lite,token,0.0,0.0,0.0,USD,free,https://ai.google.dev/gemini-api/docs/rate-limits,2026-10-19,Free tier (zero API charge; rate/day limited). Used only for the pilot measurement; the full run uses the paid tier above.
