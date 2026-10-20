@@ -69,8 +69,12 @@ def main() -> None:
             "intent": rec["intent"], "sentiment": rec["sentiment"],
             "quote": rec["evidence_quote"],
         })
+    # Keep the top-N highest-severity members per issue for the dashboard
+    # drill-down (the UI shows <=50); storing every member would bloat the DB.
+    MEMBERS_PER_ISSUE = 100
     for iid in issues:
         issues[iid]["members"].sort(key=lambda x: (-x["severity"], x["review_id"]))
+        issues[iid]["members"] = issues[iid]["members"][:MEMBERS_PER_ISSUE]
 
     ranking_out = []
     for r in ranking:
