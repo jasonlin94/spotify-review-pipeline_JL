@@ -26,22 +26,24 @@ def main() -> None:
     pct = 100 * completed / args.total
 
     log = rd.parent / (rd.name + "_run.log")
-    last, elapsed, calls = "", None, None
+    last, elapsed, calls, done_this = "", None, None, None
     if log.exists():
         lines = [l for l in log.read_text(encoding="utf-8", errors="ignore").splitlines() if l.strip()]
         if lines:
             last = lines[-1]
-            m = re.search(r"(\d+) calls, (\d+)s", last)
+            # "...<done> done, <quar> quar, <calls> calls, <elapsed>s" (current process)
+            m = re.search(r"(\d+) done,.*?(\d+) calls, (\d+)s", last)
             if m:
-                calls, elapsed = int(m.group(1)), int(m.group(2))
+                done_this, calls, elapsed = int(m.group(1)), int(m.group(2)), int(m.group(3))
 
     print(f"Run: {rd}")
     print(f"Completed: {completed:,} / {args.total:,}  ({pct:.1f}%)")
-    if elapsed and completed:
-        rate = completed / elapsed
+    # Rate from THIS process's own completed/elapsed (not cumulative) for a true ETA.
+    if elapsed and done_this:
+        rate = done_this / elapsed
         remaining = (args.total - completed) / rate if rate else 0
-        print(f"Rate: {rate:.1f} reviews/s | elapsed {elapsed/60:.1f} min | "
-              f"ETA ~{remaining/3600:.1f} h")
+        print(f"Rate: {rate:.1f} reviews/s | ETA ~{remaining/3600:.1f} h "
+              f"(this session: {done_this:,} in {elapsed/60:.0f} min)")
     # "finished" only when (near) full coverage; a leftover stats file from an
     # earlier limited run must not be mistaken for completion.
     if completed >= args.total - 50:
