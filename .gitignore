@@ -43,3 +43,9 @@ data/dataset/
 # evals golden set (blank template committed; fill it and it stays tracked)
 !evals/golden_50_labeled.csv
 !evals/*.json
+
+# allow the grading submission folder
+!grading/
+!grading/*.csv
+!grading/*.json
+!grading/*.jsonl.gz
