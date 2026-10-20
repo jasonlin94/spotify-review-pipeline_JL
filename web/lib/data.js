@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 let cache = null;
+let actualSource = "snapshot";
 
 function readSnapshotFile() {
   const p = path.join(process.cwd(), "data", "snapshot.json");
@@ -55,6 +56,7 @@ export async function getData() {
   if (dbUrl()) {
     try {
       cache = await readFromPostgres();
+      actualSource = "postgres";
       return cache;
     } catch (e) {
       // Fall back to the committed snapshot if the DB is unreachable/empty.
@@ -62,9 +64,10 @@ export async function getData() {
     }
   }
   cache = readSnapshotFile();
+  actualSource = "snapshot";
   return cache;
 }
 
 export function dataSource() {
-  return dbUrl() ? "postgres" : "snapshot";
+  return actualSource;
 }
