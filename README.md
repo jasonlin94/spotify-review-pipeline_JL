@@ -146,6 +146,12 @@ _Independent verification (400-review declared sample, Gemini):_
 topic agreement **0.603**, intent **0.950**, severity exact **0.850**, severity
 MAE **0.156**; see `verify_report.json` and its concrete disagreements.
 
+_Golden set (50 hand-labeled reviews, official):_ enricher vs human agreement —
+topic **0.78**, intent **0.90**, severity exact **0.64** (MAE 0.40), joint
+**0.54**; macro F1 topic 0.72 / intent 0.76 / severity 0.52; 0 missing
+predictions. Human labels in `evals/golden_50_labeled.csv`, per-case results in
+`evals/golden_results.json`. (The 50 answer labels are never fed to any model.)
+
 _Decision memo:_ recommends **Playback** (crashing/shuffle stability), citing
 claim IDs C1–C3 and representative review IDs — every citation code-validated.
 
