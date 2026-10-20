@@ -1,0 +1,4 @@
+stage,model,input_tokens,cached_input_tokens,output_tokens
+enrich,gemini-3.5-flash-lite,2827,0,1229
+verify,gemini-3.5-flash-lite,366,0,192
+group,gemini-3.5-flash-lite,521,0,52

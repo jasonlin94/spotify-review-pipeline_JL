@@ -1,0 +1,3 @@
+model,unit,input_per_1m,cached_input_per_1m,output_per_1m,currency,tier,source_url,checked_date,note
+gemini-3.5-flash-lite,token,0.10,0.025,0.40,USD,paid,https://ai.google.dev/gemini-api/docs/pricing,2026-10-19,EDITABLE assumption for flash-lite paid tier; recheck current price before relying on it
+gemini-3.5-flash-lite,token,0.0,0.0,0.0,USD,free,https://ai.google.dev/gemini-api/docs/rate-limits,2026-10-19,Free tier actually used during the pilot; zero API charge but rate/day limited

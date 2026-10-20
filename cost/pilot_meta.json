@@ -1,0 +1,9 @@
+{
+  "pilot_rows": 100,
+  "enrich_distinct": 100,
+  "completed": 100,
+  "failed": 0,
+  "cold_wall_s": 10.76,
+  "warm_wall_s": 0.01,
+  "warm_new_enrich_calls": 0
+}
